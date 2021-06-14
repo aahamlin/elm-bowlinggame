@@ -1,0 +1,17 @@
+{
+  "name": "elm-bowlinggame",
+  "version": "1.0.0",
+  "description": "bowling game kata",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx elm-test tests"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "elm-test": "0.19.1-revision7"
+  }
+}
