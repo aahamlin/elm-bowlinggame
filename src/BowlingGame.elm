@@ -41,52 +41,50 @@ score rolls =
                 Just n ->
                     n
 
-        scoring values total =
-            let
-                val =
-                    get 0 values
-                        |> Debug.log "scoring"
-            in
-            case val of
-                Nothing ->
+        scoring frame values total =
+            case ( frame, get 0 values ) |> Debug.log "scoring" of
+                ( 10, _ ) ->
                     total
 
-                Just 10 ->
+                ( _, Nothing ) ->
+                    total
+
+                ( frameIndex, Just 10 ) ->
                     let
                         b1 =
                             getOrZero 1 values
-                                |> Debug.log "first ball"
 
                         b2 =
                             getOrZero 2 values
-                                |> Debug.log "second ball"
 
                         newTotal =
                             total
                                 + 10
                                 + b1
                                 + b2
-                                |> Debug.log "new total"
                     in
-                    scoring (slice 1 (length values) values) newTotal
-                        |> Debug.log "strike"
+                    scoring (frameIndex + 1)
+                        (slice 1 (length values) values)
+                        newTotal
 
-                Just n ->
+                ( frameIndex, Just n ) ->
                     let
-                        frame =
+                        frameTotal =
                             n + getOrZero 1 values
                     in
-                    case frame of
+                    case frameTotal of
                         10 ->
-                            scoring (slice 2 (length values) values) total
-                                + frame
+                            scoring (frameIndex + 1)
+                                (slice 2 (length values) values)
+                                total
+                                + frameTotal
                                 + getOrZero 2 values
-                                |> Debug.log "spare"
 
                         _ ->
-                            scoring (slice 2 (length values) values) total
-                                + frame
-                                |> Debug.log "frame"
+                            scoring (frameIndex + 1)
+                                (slice 2 (length values) values)
+                                total
+                                + frameTotal
     in
-    scoring rolls 0
+    scoring 0 rolls 0
         |> Debug.log "score"

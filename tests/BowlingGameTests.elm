@@ -45,11 +45,20 @@ suite =
                 let
                     rolls =
                         Array.append
-                            (fromList [ 10, 5, 3 ])
-                            (repeat 17 0)
+                            (fromList [ 10, 3, 4 ])
+                            (repeat 16 0)
                             |> Debug.log "rolls"
                 in
                 foldl (\pin acc -> roll acc pin) Array.empty rolls
                     |> score
-                    |> Expect.equal 26
+                    |> Expect.equal 24
+        , test "perfect game" <|
+            \_ ->
+                let
+                    rolls =
+                        Array.initialize 12 (always 10)
+                in
+                foldl (\pin acc -> roll acc pin) Array.empty rolls
+                    |> score
+                    |> Expect.equal 300
         ]
