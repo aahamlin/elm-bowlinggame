@@ -41,13 +41,26 @@ score rolls =
             getOrZero 1 values
                 + getOrZero 2 values
 
-        getOrZero idx values =
-            case Array.get idx values of
-                Nothing ->
-                    0
+        scoreThisFrame values =
+            case getOrZero 0 values of
+                10 ->
+                    10 + strikeBonus values
 
-                Just n ->
-                    n
+                _ ->
+                    case sumOfFrame values of
+                        10 ->
+                            10 + spareBonus values
+
+                        n ->
+                            n
+
+        nextFrame values =
+            case getOrZero 0 values of
+                10 ->
+                    Array.sliceFrom 1 values
+
+                _ ->
+                    Array.sliceFrom 2 values
 
         scoring frame values total =
             case frame of
@@ -55,28 +68,18 @@ score rolls =
                     total
 
                 _ ->
-                    case getOrZero 0 values of
-                        10 ->
-                            scoring (frame + 1)
-                                (Array.sliceFrom 1 values)
-                                total
-                                + 10
-                                + strikeBonus values
-
-                        n ->
-                            case sumOfFrame values of
-                                10 ->
-                                    scoring (frame + 1)
-                                        (Array.sliceFrom 2 values)
-                                        total
-                                        + 10
-                                        + spareBonus values
-
-                                frameTotal ->
-                                    scoring (frame + 1)
-                                        (Array.sliceFrom 2 values)
-                                        total
-                                        + frameTotal
+                    scoring (frame + 1)
+                        (nextFrame values)
+                        (total + scoreThisFrame values)
     in
     scoring 0 rolls 0
         |> Debug.log "score"
+
+
+getOrZero idx values =
+    case Array.get idx values of
+        Nothing ->
+            0
+
+        Just n ->
+            n
